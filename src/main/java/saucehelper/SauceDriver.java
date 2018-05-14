@@ -46,12 +46,12 @@ public class SauceDriver {
 
 		// optionals
 		this.version = Optional.ofNullable(builder.version);
-		this.deviceName = Optional.of(builder.deviceName);
+		this.deviceName = Optional.ofNullable(builder.deviceName);
 		this.deviceType = Optional.ofNullable(builder.deviceType);
-		this.deviceOrientation = Optional.of(builder.deviceOrientation);
-		this.platformVersion = Optional.of(builder.platformVersion);
-		this.appiumVersion = Optional.of(builder.appiumVersion);
-		this.platformName = Optional.of(builder.platformName);
+		this.deviceOrientation = Optional.ofNullable(builder.deviceOrientation);
+		this.platformVersion = Optional.ofNullable(builder.platformVersion);
+		this.appiumVersion = Optional.ofNullable(builder.appiumVersion);
+		this.platformName = Optional.ofNullable(builder.platformName);
 
 		switch (builder.browserName) {
 		case FIREFOX:
@@ -87,13 +87,13 @@ public class SauceDriver {
 		caps.setCapability("platform", this.platform);
 		
 		// Here we take care of optional fields.
-		caps.setCapability("deviceType", this.deviceType.orElse(""));
-		caps.setCapability("version", this.version.orElse(""));
-		caps.setCapability("deviceName", this.deviceName.get());
-		caps.setCapability("deviceOrientation", this.deviceOrientation.get());
-		caps.setCapability("platformVersion", this.platformVersion.get());
-		caps.setCapability("appiumVersion", this.appiumVersion.get());
-		caps.setCapability("platformName", this.platformName .get());
+		caps.setCapability("deviceType", this.deviceType.orElse(null));
+		caps.setCapability("version", this.version.orElse(null));
+		caps.setCapability("deviceName", this.deviceName.orElse(null));
+		caps.setCapability("deviceOrientation", this.deviceOrientation.orElse(null));
+		caps.setCapability("platformVersion", this.platformVersion.orElse(null));
+		caps.setCapability("appiumVersion", this.appiumVersion.orElse(null));
+		caps.setCapability("platformName", this.platformName.orElse(null));
 	}
 
 	public DesiredCapabilities getCapabilities() {

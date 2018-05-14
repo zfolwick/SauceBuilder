@@ -55,7 +55,7 @@ public class SauceDriverWithGalenTest extends GalenTestNgTestBase {
 		//d.get("http://www.google.com");
 		d.get("http://google.com");
 		Thread.sleep(500);
-		d.quit();
+//		d.quit();
 	}
 
 	/**
@@ -65,9 +65,14 @@ public class SauceDriverWithGalenTest extends GalenTestNgTestBase {
 	 */
 	@Override
 	public WebDriver createDriver(Object[] args) {
-		WebDriver d = new SauceDriver.Builder(DriverType.CHROME, Platform.SIERRA.toString())
-									 .withVersion("66.0")
-									 .build();
+//		WebDriver d = new SauceDriver.Builder(DriverType.CHROME, Platform.SIERRA.toString())
+//									 .withVersion("66.0")
+//									 .build();
+		
+		WebDriver d = new SauceDriver.Builder(DriverType.SAFARI, "macOS 10.12")
+				  .withVersion("11.0")
+				  .build();
+
 		return d;
 	}
 }
