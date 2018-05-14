@@ -2,8 +2,8 @@ package saucehelper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -12,99 +12,46 @@ import org.testng.Assert;
 public class SauceDriver {
 	private DesiredCapabilities caps = null;
 	public static final String USERNAME = "rei-sauce";
-	public static final String API_KEY = System.getProperty("SAUCE_API_KEY"); // get from command line parameter
+	public static final String API_KEY = "4123c53d-c0a2-42cb-b536-cdb3403ceee0";
 	public static final String SAUCE_URL = "https://" + USERNAME + ":" + API_KEY + "@ondemand.saucelabs.com:443/wd/hub";
 
 	// https://wiki.saucelabs.com/display/DOCS/Examples+of+Test+Configuration+Options+for+Website+Tests#ExamplesofTestConfigurationOptionsforWebsiteTests-PC/Windows/IE
 
-	/*
-	 * PC/Windows/IE DesiredCapabilities caps =
-	 * DesiredCapabilities.internetExplorer(); caps.setCapability("platform",
-	 * "Windows 8.1"); caps.setCapability("version", "11.0"); PC/Linux/Chrome
-	 * DesiredCapabilities caps = DesiredCapabilities.chrome();
-	 * caps.setCapability("platform", "Linux"); caps.setCapability("version",
-	 * "47.0"); Mac/OSX/Safari DesiredCapabilities caps =
-	 * DesiredCapabilities.safari(); caps.setCapability("platform", "OS X 10.9");
-	 * caps.setCapability("version", "7.0"); Android Emulator Phone/Android 5.1
-	 * DesiredCapabilities caps = DesiredCapabilities.android();
-	 * caps.setCapability("platform", "Linux"); caps.setCapability("version",
-	 * "5.1"); caps.setCapability("deviceName","Android Emulator");
-	 * caps.setCapability("deviceType","phone");
-	 * caps.setCapability("deviceOrientation", "portrait"); Samsung Galaxy S3
-	 * Emulator/Android 4.4 DesiredCapabilities caps =
-	 * DesiredCapabilities.android(); caps.setCapability("platform", "Linux");
-	 * caps.setCapability("version", "4.4");
-	 * caps.setCapability("deviceName","Samsung Galaxy S3 Emulator");
-	 * caps.setCapability("deviceOrientation", "portrait");
-	 */
-
 	// These should be all that's required for Desktop stuff
 	private final DriverType browserName;
 	private final String platform;
-	private final String version;
-
-	private final String deviceName;
-	private final String deviceType;
-	private final String deviceOrientation;
+	
+	private Optional<String> version = Optional.empty();
+	private Optional<String> deviceName = Optional.empty();
+	private Optional<String> deviceType = Optional.empty();
+	private Optional<String> deviceOrientation = Optional.empty();
 
 	////// APPIUM STUFF
-	/*
-	 * Appium Mobile and Desktop Browser Test Configuration Examples iPhone
-	 * DesiredCapabilities caps = DesiredCapabilities.iphone();
-	 * caps.setCapability("appiumVersion", "1.5.1");
-	 * caps.setCapability("deviceName","iPhone 6");
-	 * caps.setCapability("deviceOrientation", "portrait");
-	 * caps.setCapability("platformVersion","8.4");
-	 * caps.setCapability("platformName", "iOS"); caps.setCapability("browserName",
-	 * "Safari"); iPad DesiredCapabilities caps = DesiredCapabilities.iphone();
-	 * caps.setCapability("appiumVersion", "1.5.1");
-	 * caps.setCapability("deviceName","iPad Retina");
-	 * caps.setCapability("deviceOrientation", "portrait");
-	 * caps.setCapability("platformVersion","8.4");
-	 * caps.setCapability("platformName", "iOS"); caps.setCapability("browserName",
-	 * "Safari"); Android Phone Emulator/Android 4.4 DesiredCapabilities caps =
-	 * DesiredCapabilities.android(); caps.setCapability("appiumVersion", "1.5.1");
-	 * caps.setCapability("deviceName","Android Emulator");
-	 * caps.setCapability("deviceType","phone");
-	 * caps.setCapability("deviceOrientation", "portrait");
-	 * caps.setCapability("browserName", "Browser");
-	 * caps.setCapability("platformVersion", "4.4");
-	 * caps.setCapability("platformName","Android");
-	 */
-	// All the above
-	private final String appiumVersion;
 
-	/*
-	 * REAL DEVICES MAY NOT BE DEALT WITH HERE.... iPhone 6 Real Device {
-	 * deviceName:'iPhone 6 Device', platformName:'iOS', platformVersion:'8.0',
-	 * browserName:'Safari', "appium-version":"1.5.1" } Samsung Galaxy S5 Real
-	 * Device { deviceName:'Samsung Galaxy S5 Device', platformName:'Android',
-	 * platformVersion:'4.4', browserName:'Chrome', name:'S5 real device google.com'
-	 * } Samsung Galaxy S4 Real Device { deviceName:'Samsung Galaxy S4 Device',
-	 * platformName:'Android', platformVersion:'4.4', browserName:'Chrome', name:'S5
-	 * real device google.com' }
-	 */
+	// All the above
+	private Optional<String> platformVersion = Optional.empty();
+	private Optional<String> appiumVersion = Optional.empty();
+	private Optional<String> platformName = Optional.empty();
+
 	// private ctor
 	private SauceDriver() {
 		/* don't use empty ctor */
 		this.browserName = null;
 		this.platform = null;
-		this.version = null;
-		this.deviceName = null;
-		this.deviceType = null;
-		this.deviceOrientation = null;
-		this.appiumVersion = null;
 	}
 
 	private SauceDriver(Builder builder) {
 		this.browserName = builder.browserName;
 		this.platform = builder.platform;
-		this.version = builder.version;
+
 		// optionals
-		this.deviceName = builder.deviceName;
-		this.deviceType = builder.deviceType;
-		this.deviceOrientation = builder.deviceOrientation;
-		this.appiumVersion = builder.appiumVersion;
+		this.version = Optional.ofNullable(builder.version);
+		this.deviceName = Optional.of(builder.deviceName);
+		this.deviceType = Optional.ofNullable(builder.deviceType);
+		this.deviceOrientation = Optional.of(builder.deviceOrientation);
+		this.platformVersion = Optional.of(builder.platformVersion);
+		this.appiumVersion = Optional.of(builder.appiumVersion);
+		this.platformName = Optional.of(builder.platformName);
 
 		switch (builder.browserName) {
 		case FIREFOX:
@@ -138,10 +85,15 @@ public class SauceDriver {
 
 		// Required capabilities
 		caps.setCapability("platform", this.platform);
-		caps.setCapability("version", this.version);
 		
 		// Here we take care of optional fields.
-		
+		caps.setCapability("deviceType", this.deviceType.orElse(""));
+		caps.setCapability("version", this.version.orElse(""));
+		caps.setCapability("deviceName", this.deviceName.get());
+		caps.setCapability("deviceOrientation", this.deviceOrientation.get());
+		caps.setCapability("platformVersion", this.platformVersion.get());
+		caps.setCapability("appiumVersion", this.appiumVersion.get());
+		caps.setCapability("platformName", this.platformName .get());
 	}
 
 	public DesiredCapabilities getCapabilities() {
@@ -153,14 +105,16 @@ public class SauceDriver {
 		// Required Parameters
 		private final DriverType browserName;
 		private final String platform;
-		private final String version;
+		
 		// Optional Parameters
+		private String version; // not present with mobile! 
 		private String deviceName;
 		private String deviceType;
 		private String deviceOrientation;
 		private String dimension;
-		// TODO: Possibly remove
+		private String platformVersion;
 		private String appiumVersion;
+		private String platformName;
 
 		/**
 		 * 
@@ -168,10 +122,19 @@ public class SauceDriver {
 		 * @param platform - Linux, Windows, Mac, etc.
 		 * @param version - appropriate version number as a string.
 		 */
-		public Builder(DriverType browserName, String platform, String version) {
+		public Builder(DriverType browserName, String platform) {
 			this.browserName = browserName;
 			this.platform = platform;
-			this.version = version;
+		}
+		
+		public Builder withVersion(String value){
+			this.version = value;
+			return this;
+		}
+		
+		public Builder withPlatformVersion(String value) {
+			this.platformVersion = value;
+			return this;
 		}
 
 		public Builder withDeviceName(String value) {
@@ -193,8 +156,17 @@ public class SauceDriver {
 			this.appiumVersion = value;
 			return this;
 		}
+		
+		public Builder withPlatformName(String value) {
+			this.platformName = value;
+			return this;
+		}
 
 		public WebDriver build() {
+			final String USERNAME = "rei-sauce";
+			final String API_KEY = "4123c53d-c0a2-42cb-b536-cdb3403ceee0";
+			final String SAUCE_URL = "https://" + USERNAME + ":" + API_KEY + "@ondemand.saucelabs.com:443/wd/hub";
+
 			SauceDriver sd = new SauceDriver(this);
 			WebDriver d = null;
 			try {
@@ -204,6 +176,7 @@ public class SauceDriver {
 				e.printStackTrace();
 			}
 			Assert.assertNotNull(d, "Expected Webdriver to be initialized!");
+			
 			return d;
 		}
 	}
