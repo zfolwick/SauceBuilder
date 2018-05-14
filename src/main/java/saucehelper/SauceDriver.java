@@ -12,7 +12,7 @@ import org.testng.Assert;
 public class SauceDriver {
 	private DesiredCapabilities caps = null;
 	public static final String USERNAME = "rei-sauce";
-	public static final String API_KEY = "4123c53d-c0a2-42cb-b536-cdb3403ceee0";
+	public static final String API_KEY = System.getProperty("SAUCE_API_KEY");
 	public static final String SAUCE_URL = "https://" + USERNAME + ":" + API_KEY + "@ondemand.saucelabs.com:443/wd/hub";
 
 	// https://wiki.saucelabs.com/display/DOCS/Examples+of+Test+Configuration+Options+for+Website+Tests#ExamplesofTestConfigurationOptionsforWebsiteTests-PC/Windows/IE
@@ -163,16 +163,11 @@ public class SauceDriver {
 		}
 
 		public WebDriver build() {
-			final String USERNAME = "rei-sauce";
-			final String API_KEY = "4123c53d-c0a2-42cb-b536-cdb3403ceee0";
-			final String SAUCE_URL = "https://" + USERNAME + ":" + API_KEY + "@ondemand.saucelabs.com:443/wd/hub";
-
 			SauceDriver sd = new SauceDriver(this);
 			WebDriver d = null;
 			try {
 				d = new RemoteWebDriver(new URL(SAUCE_URL), sd.getCapabilities());
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			Assert.assertNotNull(d, "Expected Webdriver to be initialized!");
